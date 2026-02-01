@@ -1,0 +1,121 @@
+#!/bin/bash
+# Sync agents, commands, and skills from ~/.agents to ~/.config/opencode
+
+AGENTS_DIR="$HOME/.agents"
+OPENCODE_DIR="$HOME/.config/opencode"
+
+# --- Directory symlinks (agent, command) ---
+
+sync_directory() {
+    local name=$1
+    local source="$AGENTS_DIR/$name"
+    local target="$OPENCODE_DIR/$name"
+
+    if [ ! -d "$source" ]; then
+        echo "  SKIP $name/ (source not found)"
+        return
+    fi
+
+    if [ -L "$target" ]; then
+        local current
+        current=$(readlink -f "$target")
+        if [ "$current" = "$source" ]; then
+            local count
+            count=$(find "$source" -type f | wc -l)
+            echo "  OK   $name/ ($count files)"
+        else
+            rm "$target"
+            ln -s "$source" "$target"
+            echo "  FIX  $name/ (relinked)"
+        fi
+    elif [ -d "$target" ]; then
+        echo "  WARN $name/ exists as directory, not symlink — skipping"
+        echo "       Remove $target manually and re-run to fix"
+    else
+        ln -s "$source" "$target"
+        echo "  NEW  $name/ (symlinked)"
+    fi
+}
+
+echo "=== Directories ==="
+sync_directory "agent"
+sync_directory "command"
+echo ""
+
+# --- Individual skill symlinks ---
+
+SKILL_SOURCE="$AGENTS_DIR/skills"
+SKILL_TARGET="$OPENCODE_DIR/skills"
+
+mkdir -p "$SKILL_TARGET"
+
+added=()
+removed=()
+existing=()
+
+# Create symlinks for new skills
+for skill in "$SKILL_SOURCE"/*/; do
+    name=$(basename "$skill")
+    if [ ! -e "$SKILL_TARGET/$name" ]; then
+        ln -s "$SKILL_SOURCE/$name" "$SKILL_TARGET/$name"
+        added+=("$name")
+    else
+        existing+=("$name")
+    fi
+done
+
+# Remove broken symlinks
+for link in "$SKILL_TARGET"/*; do
+    if [ -L "$link" ] && [ ! -e "$link" ]; then
+        rm "$link"
+        removed+=("$(basename "$link")")
+    fi
+done
+
+# Helper to get skill count for categories
+get_skill_info() {
+    local name=$1
+    local subskills
+    subskills=$(find "$SKILL_SOURCE/$name" -mindepth 2 -maxdepth 2 -name "SKILL.md" 2>/dev/null | wc -l)
+    if [ "$subskills" -gt 0 ]; then
+        [ "$subskills" -eq 1 ] && echo "$name/ ($subskills skill)" || echo "$name/ ($subskills skills)"
+    else
+        echo "$name/"
+    fi
+}
+
+# Show new skills
+if [ ${#added[@]} -gt 0 ]; then
+    echo "=== Skills: New (${#added[@]}) ==="
+    for name in "${added[@]}"; do
+        echo "+ $(get_skill_info "$name")"
+    done
+    echo ""
+fi
+
+# Show removed skills
+if [ ${#removed[@]} -gt 0 ]; then
+    echo "=== Skills: Removed (${#removed[@]}) ==="
+    for name in "${removed[@]}"; do
+        echo "- $name/"
+    done
+    echo ""
+fi
+
+# Show existing skills
+if [ ${#existing[@]} -gt 0 ]; then
+    echo "=== Skills: Existing (${#existing[@]}) ==="
+    for name in "${existing[@]}"; do
+        echo "  $(get_skill_info "$name")"
+    done
+    echo ""
+fi
+
+# Summary
+total=$((${#added[@]} + ${#existing[@]}))
+echo "=== Summary ==="
+echo "Directories: agent/, command/ synced"
+echo "Skills: $total synced"
+[ ${#added[@]} -gt 0 ] && echo "  New: ${#added[@]}"
+[ ${#removed[@]} -gt 0 ] && echo "  Removed: ${#removed[@]}"
+[ ${#added[@]} -eq 0 ] && [ ${#removed[@]} -eq 0 ] && echo "  No skill changes"
