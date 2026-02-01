@@ -1,7 +1,6 @@
 ---
 description: Use when you need to understand how a component works by reading code and tracing data flow (with file:line references). Triggers on "how does this work" or "trace the flow".
 mode: subagent
-# model: opencode/grok-code
 model: anthropic/claude-sonnet-4-5
 temperature: 0.1
 permission:

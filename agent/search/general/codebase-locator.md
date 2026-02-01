@@ -1,7 +1,6 @@
 ---
 description: Use when you need to locate where something lives in a codebase (files/dirs) without analyzing contents. Triggers on "where is X" or "find the file for X".
 mode: subagent
-# model: opencode/grok-code
 model: anthropic/claude-sonnet-4-5
 temperature: 0.1
 permission:
