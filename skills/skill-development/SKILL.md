@@ -1,6 +1,6 @@
 ---
 name: skill-development
-description: This skill should be used when the user wants to "create a skill", "add a skill", "write a new skill", "improve skill description", "organize skill content", or needs guidance on skill structure, progressive disclosure, or skill development best practices for Opencode.
+description: This skill should be used when the user wants to "create a skill", "write a SKILL.md", "improve an existing skill", or "organize skill resources" (references/examples/scripts).
 ---
 
 # Skill Development for Opencode
@@ -126,25 +126,18 @@ Example: When building a `big-query` skill to handle queries like "How many user
 1. Querying BigQuery requires re-discovering the table schemas and relationships each time
 2. A `references/schema.md` file documenting the table schemas would be helpful to store in the skill
 
-**For Opencode skills:** When building a hooks skill, the analysis shows:
-1. Developers repeatedly need to validate hook configurations and test hook scripts
-2. `scripts/validate-hook-schema.sh` and `scripts/test-hook.sh` utilities would be helpful
-3. `references/patterns.md` for detailed hook patterns to avoid bloating SKILL.md
-
 To establish the skill's contents, analyze each concrete example to create a list of the reusable resources to include: scripts, references, and assets.
 
 ### Step 3: Create Skill Structure
 
-Create the skill directory structure in the appropriate location:
+Create the skill directory structure in the appropriate location.
+
+In this environment, skills are stored under `/home/thomas/.agents/skills/` and (if needed) symlinked into whatever directory OpenCode is configured to scan.
 
 ```bash
-# Project-local skill
-mkdir -p .opencode/skills/skill-name/{references,examples,scripts}
-touch .opencode/skills/skill-name/SKILL.md
-
 # Global skill (available across all projects)
-mkdir -p ~/.config/opencode/skills/skill-name/{references,examples,scripts}
-touch ~/.config/opencode/skills/skill-name/SKILL.md
+mkdir -p /home/thomas/.agents/skills/skill-name/{references,examples,scripts}
+touch /home/thomas/.agents/skills/skill-name/SKILL.md
 ```
 
 **Skill name validation:** The skill directory name must match the skill name. Names must be 1-64 characters, matching the pattern `^[a-z0-9]+(-[a-z0-9]+)*$` (lowercase alphanumeric with single hyphens, no consecutive hyphens).
@@ -174,14 +167,14 @@ description: This skill should be used when the user asks to "specific phrase 1"
 
 **Good description examples:**
 ```yaml
-description: This skill should be used when the user asks to "create a hook", "add a PreToolUse hook", "validate tool use", "implement prompt-based hooks", or mentions hook events (PreToolUse, PostToolUse, Stop).
+description: This skill should be used when the user asks to "create a skill", "write a SKILL.md", "add a references/ file", or "organize examples and scripts".
 ```
 
 **Bad description examples:**
 ```yaml
-description: Use this skill when working with hooks.  # Wrong person, vague
-description: Load when user needs hook help.  # Not third person
-description: Provides hook guidance.  # No trigger phrases
+description: Use this skill when working with skills.  # Wrong person, vague
+description: Load when user needs skill help.  # Not third person
+description: Provides skill guidance.  # No trigger phrases
 ```
 
 To complete SKILL.md body, answer the following questions:
@@ -214,7 +207,7 @@ Working examples in `examples/`:
 
 ### Step 5: Validate and Test
 
-1. **Check structure**: Skill directory in `.opencode/skills/skill-name/` or `~/.config/opencode/skills/skill-name/`
+1. **Check structure**: Skill directory in `/home/thomas/.agents/skills/skill-name/`
 2. **Validate name**: Directory name matches pattern `^[a-z0-9]+(-[a-z0-9]+)*$`, 1-64 chars
 3. **Validate SKILL.md**: Has frontmatter with name and description
 4. **Check trigger phrases**: Description includes specific user queries
@@ -259,12 +252,11 @@ After testing the skill, users may request improvements. Often this happens righ
 
 ## Skill Discovery
 
-Opencode automatically discovers skills by walking up from the current directory to the git worktree root, loading SKILL.md files from:
+In this setup, skills are maintained under:
 
-- **Project-local**: `.opencode/skills/` directories found while walking up to the worktree root
-- **Global**: `~/.config/opencode/skills/` for skills available across all projects
+- **Global skills (canonical):** `/home/thomas/.agents/skills/<skill-name>/SKILL.md`
 
-Note: Skills are also loaded from `.claude/skills/` directories for compatibility.
+Assume those directories may be symlinked into an OpenCode-scanned skills folder as needed. When documenting paths, prefer the canonical `.agents/skills` location.
 
 For each skill directory found, Opencode:
 - Finds subdirectories containing `SKILL.md`
@@ -324,16 +316,16 @@ Write using verb-first instructions, not second person:
 
 **Correct (imperative):**
 ```
-To create a hook, define the event type.
-Configure the MCP server with authentication.
-Validate settings before use.
+Create the skill directory.
+Write a focused SKILL.md.
+Move detailed material into references/.
 ```
 
 **Incorrect (second person):**
 ```
-You should create a hook by defining the event type.
-You need to configure the MCP server.
-You must validate settings before use.
+You should create the skill directory.
+You need to write a focused SKILL.md.
+You must move detailed material into references/.
 ```
 
 ### Third-Person in Description
@@ -412,14 +404,14 @@ Before finalizing a skill:
 
 ❌ **Bad:**
 ```yaml
-description: Provides guidance for working with hooks.
+description: Provides guidance for skills.
 ```
 
 **Why bad:** Vague, no specific trigger phrases, not third person
 
 ✅ **Good:**
 ```yaml
-description: This skill should be used when the user asks to "create a hook", "add a PreToolUse hook", "validate tool use", or mentions hook events. Provides comprehensive hooks API guidance.
+description: This skill should be used when the user asks to "create a skill", "write a SKILL.md", "improve a skill description", or "organize references/examples/scripts".
 ```
 
 **Why good:** Third person, specific phrases, concrete scenarios
@@ -571,7 +563,7 @@ To create a skill:
 
 1. **Understand use cases**: Identify concrete examples of skill usage
 2. **Plan resources**: Determine what scripts/references/examples needed
-3. **Create structure**: `mkdir -p .opencode/skills/skill-name/{references,examples,scripts}`
+3. **Create structure**: `mkdir -p /home/thomas/.agents/skills/skill-name/{references,examples,scripts}`
 4. **Write SKILL.md**:
    - Frontmatter with third-person description and trigger phrases
    - Lean body (1,500-2,000 words) in imperative form

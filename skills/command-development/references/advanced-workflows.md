@@ -76,7 +76,7 @@ Creating deployment tracking file...
 Current branch: !`git branch --show-current`
 Latest commit: !`git log -1 --format=%H`
 
-Deployment state saved to `.opencode/deployment-state.local.md`:
+Deployment state saved to `.agents/deployment-state.local.md`:
 
 \`\`\`markdown
 ---
@@ -107,7 +107,7 @@ State saved. Run `/deploy-test` to continue.
 description: Run deployment tests
 ---
 
-Reading deployment state from `.opencode/deployment-state.local.md`...
+Reading deployment state from `.agents/deployment-state.local.md`...
 
 Running tests: !`npm test`
 
@@ -278,7 +278,7 @@ Details:
 Store workflow state in local files:
 
 ```markdown
-.opencode/workflow.local.md:
+.agents/workflow.local.md:
 
 ---
 workflow: deployment
@@ -314,9 +314,9 @@ Pending steps:
 description: Continue deployment workflow
 ---
 
-Reading workflow state from .opencode/workflow.local.md...
+Reading workflow state from .agents/workflow.local.md...
 
-Current stage: @.opencode/workflow.local.md
+Current stage: @.agents/workflow.local.md
 
 [Parse YAML frontmatter to determine next step]
 
@@ -336,7 +336,7 @@ description: Resume deployment workflow
 
 Checking for interrupted workflow...
 
-State file: @.opencode/workflow.local.md
+State file: @.agents/workflow.local.md
 
 **Workflow found:**
 - Started: [timestamp]
@@ -366,7 +366,7 @@ description: Mark feature complete
 
 Writing completion marker...
 
-Creating: .opencode/feature-complete.flag
+Creating: .agents/feature-complete.flag
 
 This signals other commands that feature is ready for:
 - Integration testing (/integration-test will auto-detect)
@@ -385,7 +385,7 @@ description: Generate release notes
 
 Checking for completed features...
 
-if [ -f .opencode/feature-complete.flag ]; then
+if [ -f .agents/feature-complete.flag ]; then
   Feature ready for release notes
 fi
 
@@ -405,7 +405,7 @@ description: Start deployment
 
 Checking for active deployments...
 
-if [ -f .opencode/deployment.lock ]; then
+if [ -f .agents/deployment.lock ]; then
   ERROR: Deployment already in progress
   Started: [timestamp from lock file]
 
@@ -431,7 +431,7 @@ description: Complete deployment
 Deployment complete.
 
 Removing deployment lock...
-rm .opencode/deployment.lock
+rm .agents/deployment.lock
 
 Ready for next deployment.
 ```
@@ -576,15 +576,15 @@ description: Workflow with checkpoints
 
 ## Checkpoint 1: Validation
 !`validate.sh`
-echo "checkpoint:validation" >> .opencode/deployment-checkpoints.log
+echo "checkpoint:validation" >> .agents/deployment-checkpoints.log
 
 ## Checkpoint 2: Build
 !`build.sh`
-echo "checkpoint:build" >> .opencode/deployment-checkpoints.log
+echo "checkpoint:build" >> .agents/deployment-checkpoints.log
 
 ## Checkpoint 3: Deploy
 !`deploy.sh`
-echo "checkpoint:deploy" >> .opencode/deployment-checkpoints.log
+echo "checkpoint:deploy" >> .agents/deployment-checkpoints.log
 
 If any step fails, resume with:
 /deployment-resume [last-successful-checkpoint]
@@ -648,7 +648,7 @@ timestamp: !`date -u +%Y-%m-%dT%H:%M:%SZ`
 ---
 \`\`\`
 
-Written to .opencode/deployment-state.local.md
+Written to .agents/deployment-state.local.md
 
 Next: Run /deployment-validate
 ```
@@ -660,7 +660,7 @@ Next: Run /deployment-validate
 description: Validate deployment
 ---
 
-Reading state: @.opencode/deployment-state.local.md
+Reading state: @.agents/deployment-state.local.md
 
 Running validation...
 - Branch check: PASS
@@ -679,7 +679,7 @@ Next: Run /deployment-execute
 description: Execute deployment
 ---
 
-Reading state: @.opencode/deployment-state.local.md
+Reading state: @.agents/deployment-state.local.md
 
 Executing deployment to [environment]...
 
@@ -699,7 +699,7 @@ description: Clean up deployment
 ---
 
 Removing deployment state...
-rm .opencode/deployment-state.local.md
+rm .agents/deployment-state.local.md
 
 Deployment workflow complete.
 ```

@@ -14,7 +14,6 @@ Well-documented commands are easier to use, maintain, and distribute. Documentat
 ---
 description: Clear, actionable description under 60 chars
 argument-hint: [arg1] [arg2] [optional-arg]
-model: anthropic/claude-sonnet-4-5
 ---
 
 <!--
@@ -60,13 +59,7 @@ CHANGELOG:
 
 # Command Implementation
 
-[Command prompt content here...]
-
-[Explain what will happen...]
-
-[Guide user through steps...]
-
-[Provide clear output...]
+[Command instructions here...]
 ```
 
 ### Documentation Comment Sections
@@ -655,7 +648,7 @@ enable_feature: true
 
 ### Issue: Command not found
 
-**Solution:** Ensure command file exists in `.opencode/commands/` directory.
+**Solution:** Ensure command file exists in `.agents/command/`.
 
 ### Issue: Permission denied
 
