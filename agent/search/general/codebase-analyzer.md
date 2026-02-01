@@ -1,5 +1,5 @@
 ---
-description: Call the codebase-analyzer agent when you need to find information about specific components of the codebase.
+description: Use when you need to understand how a component works by reading code and tracing data flow (with file:line references). Triggers on "how does this work" or "trace the flow".
 mode: subagent
 # model: opencode/grok-code
 model: anthropic/claude-sonnet-4-5

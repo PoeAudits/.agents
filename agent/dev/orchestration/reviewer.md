@@ -1,6 +1,5 @@
 ---
-name: reviewer
-description: Read-only agent for reviewing implementations against requirements and coding guidelines. Use to verify that completed work meets plan specifications and follows best practices.
+description: Use when you need a read-only review of changes against requirements and coding guidelines. Triggers on "review this", "check my changes", or "code review".
 mode: subagent
 model: anthropic/claude-sonnet-4-5
 temperature: 0.1
@@ -206,82 +205,6 @@ Your final message MUST include a structured review report:
 | Make judgment calls on requirements | Report factually, flag ambiguities for orchestrator |
 | Skip reading coding guidelines | Always read relevant guidelines skill first |
 | Flag missing tests or test coverage | Testing is out of scope—focus on the implementation code |
-
----
-
-## Example Review
-
-### Input from Orchestrator
-```
-Review the user authentication middleware implementation.
-Files: src/middleware/auth.ts
-Requirements: Validate JWT, return 401 on failure, attach user to request
-Check against: typescript-coding-guidelines
-```
-
-### Example Report
-```markdown
-## Review Summary
-
-**Status**: PASS WITH NOTES
-
-**Files Reviewed**:
-- `src/middleware/auth.ts` (created)
-
----
-
-## Requirements Compliance
-
-### Met
-- [x] Validates JWT from Authorization header
-- [x] Returns 401 on invalid/missing token
-- [x] Attaches decoded user to request object
-
-### Not Met
-(none)
-
----
-
-## Issues Found
-
-### Critical
-(none)
-
-### Minor
-1. **Missing specific error messages**
-   - Location: `auth.ts:23-25`
-   - Problem: Both "no token" and "invalid token" return same generic message
-   - Guideline violated: Error messages should be descriptive (typescript-coding-guidelines)
-
-2. **No token expiry handling**
-   - Location: `auth.ts:28`
-   - Problem: TokenExpiredError not caught separately from other JWT errors
-
-### Trivial
-1. **Typo in comment**
-   - Location: `auth.ts:5`
-   - Problem: "authenication" → "authentication"
-   - Suggested fix: `// Handle authenication` → `// Handle authentication`
-
----
-
-## Guidelines Compliance
-
-**Language**: TypeScript
-**Guidelines Skill Consulted**: Yes
-
-| Guideline | Status | Notes |
-|-----------|--------|-------|
-| Explicit error handling | ✗ | Should differentiate JWT error types |
-| Async/await usage | ✓ | Correctly uses async middleware pattern |
-| Type safety | ✓ | Request type properly extended |
-
----
-
-## Recommendations for Orchestrator
-
-Minor issues found but implementation is functional. Can proceed with notes for future improvement, or dispatch worker to add specific error messages before continuing.
-```
 
 ---
 

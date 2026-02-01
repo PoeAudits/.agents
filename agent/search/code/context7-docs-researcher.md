@@ -1,7 +1,5 @@
 ---
-name: context7-docs-researcher
-description: Discovers and synthesizes library documentation, API references,
-  and code examples using Context7 library-aware search.
+description: Use when you need library docs, API references, or examples via Context7 (resolve library ID then query docs). Triggers on "Context7" or "library docs".
 mode: subagent
 permission:
   write: "deny"

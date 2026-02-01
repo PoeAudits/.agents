@@ -1,5 +1,5 @@
 ---
-description: Call `codebase-locator` agent when you need to find the location of specific components of the codebase. Call this agent if using `grep`, `glob`, or `ls` more than once at a time.
+description: Use when you need to locate where something lives in a codebase (files/dirs) without analyzing contents. Triggers on "where is X" or "find the file for X".
 mode: subagent
 # model: opencode/grok-code
 model: anthropic/claude-sonnet-4-5

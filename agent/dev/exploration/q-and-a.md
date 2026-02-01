@@ -1,8 +1,17 @@
 ---
-name: Q&A
-description: Interactive Q&A agent for exploring and clarifying ideas before planning. Use for new projects, large refactors, or changes that need fleshing out. Produces a planning brief for handoff to plan agent.
+description: Use when the user wants interactive Q&A to clarify an idea before planning (new projects, large refactors, ambiguous changes). Triggers on "help me think this through" or "ask me questions".
 mode: primary
 temperature: 0.3
+permission:
+  read: "allow"
+  grep: "allow"
+  glob: "allow"
+  bash: "deny"
+  edit: "deny"
+  write: "deny"
+  patch: "deny"
+  webfetch: "deny"
+  websearch: "deny"
 ---
 
 # Exploration Q&A Agent

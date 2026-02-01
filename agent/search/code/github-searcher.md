@@ -1,7 +1,5 @@
 ---
-name: github-searcher
-description: Finds real-world code implementation examples, repo documentation,
-  changelogs, and migration guides from public GitHub repositories.
+description: Use when you need real-world code examples or repo docs from public GitHub repositories (via GitHub search). Triggers on "find an example repo" or "search GitHub".
 mode: subagent
 permission:
   write: "deny"

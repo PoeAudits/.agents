@@ -1,7 +1,5 @@
 ---
-name: exa-docs-researcher
-description: Discovers and synthesizes official documentation, API references,
-  changelogs, and guides using Exa semantic and keyword search.
+description: Use when you need to discover and synthesize official documentation and changelogs using Exa search/fetch. Triggers on "find docs" or "look up documentation".
 mode: subagent
 permission:
   write: "deny"

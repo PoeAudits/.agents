@@ -1,6 +1,5 @@
 ---
-name: documenter
-description: Documentation agent for updating README.md and AGENTS.md after implementation phases. Ensures documentation stays synchronized with code changes.
+description: Use when you need to update README.md and AGENTS.md after implementation so docs match the code. Triggers on "update the docs" or "refresh README".
 mode: subagent
 model: anthropic/claude-sonnet-4-5
 temperature: 0.15
@@ -30,6 +29,10 @@ After each implementation phase, you receive:
 3. A summary of what was implemented
 
 Your job is to update the documentation to reflect these changes.
+
+## Output Format
+
+Return a single markdown message following the template in the "Documentation Summary Report" section.
 
 ## Two Documentation Targets
 
@@ -213,64 +216,6 @@ Your final message MUST include a concise summary:
 | Leave docs for deleted files | Remove references when files are deleted in the phase |
 | Let AGENTS.md grow unbounded | Stay within size guidelines, condense when needed |
 | Search codebase for stale docs | Only clean up content related to the current phase |
-
----
-
-## Example Documentation Updates
-
-### Example 1: Adding a feature — "Add User Authentication"
-
-**Files Changed:**
-- Created: `src/services/auth.service.ts`
-- Created: `src/middleware/auth.middleware.ts`
-- Modified: `src/routes/index.ts`
-- Created: `src/types/auth.types.ts`
-
-**README.md Updates:**
-```markdown
-## Authentication (NEW SECTION)
-
-The API uses JWT-based authentication. To access protected endpoints:
-
-1. Obtain a token via `POST /auth/login`
-2. Include the token in the Authorization header: `Bearer <token>`
-
-### Environment Variables
-- `JWT_SECRET`: Secret key for token signing (required)
-- `JWT_EXPIRY`: Token expiration time (default: 1h)
-```
-
-**AGENTS.md Updates** (document the pattern, not the files):
-```markdown
-## Authentication Pattern
-
-JWT-based auth using middleware pattern. The auth middleware attaches
-`req.user` with decoded token payload. Protected routes apply
-`authMiddleware` before handlers.
-
-Auth services live in `src/services/`, middleware in `src/middleware/`.
-```
-
-### Example 2: Replacing a component — cleanup behavior
-
-**Files Changed:**
-- Created: `src/cache/redis.ts`
-- Removed: `src/cache/memory-cache.ts`
-- Modified: `src/services/user.service.ts`
-
-**AGENTS.md cleanup:** Remove any references to `memory-cache.ts` or the in-memory caching pattern from sections being updated. Replace with the new Redis caching pattern.
-
-**Before (outdated):**
-```markdown
-## Caching
-Uses in-memory LRU cache via `src/cache/memory-cache.ts`.
-```
-
-**After (updated):**
-```markdown
-## Caching
-Uses Redis for caching. Cache client in `src/cache/redis.ts`.
-```
 
 ---
 
