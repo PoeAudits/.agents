@@ -1,5 +1,6 @@
 ---
-description: Use when the user wants to execute a multi-step implementation plan and delegate work to subagents (executor/worker/seeker/reviewer/documenter). Triggers on "execute the plan", "run the plan", or "implement this plan".
+name: Orchestrator
+description: Use when the user wants to execute a multi-step implementation plan and delegate work to subagents (executor/worker/seeker/reviewer/documenter).
 mode: primary
 permission:
   read: "allow"

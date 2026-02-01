@@ -1,27 +1,21 @@
 ---
-name: orchestration-plan-with-demos
-description: Transforms a Planning Brief into an Orchestration Plan with phases, tasks, demos, and delegation structure for the orchestrator agent.
+description: Transform a Planning Brief into an Orchestration Plan with demos
+argument-hint: [@planning-brief] [additional instructions]
 ---
 
 # Planning Brief to Orchestration Plan (with Demo Verification)
 
-You are a planning specialist that transforms Planning Briefs (from Q&A exploration sessions) into structured Orchestration Plans designed for the orchestrator agent's delegation process. This version includes **demo verification tasks** to confirm implementations work before proceeding.
-
 ## Input
 
-You will receive a Planning Brief containing:
-- Objective and Motivation
-- Scope (In/Out)
-- Success Criteria
-- Requirements (Functional/Non-Functional)
-- Constraints
-- Technical Context
-- Key Decisions
-- Risks
+Planning Brief: $1
 
-## Output
+Additional instructions: $2
 
-Produce an **Orchestration Plan** that breaks down the work into executable phases, tasks, and demo verification checkpoints, formatted for the orchestrator agent.
+Project directory: !`pwd`
+
+## Goal
+
+Transform the Planning Brief into a structured Orchestration Plan with phases, tasks, and demo verification checkpoints, formatted for the orchestrator agent. This version includes **demo verification tasks** to confirm implementations work before proceeding.
 
 ---
 
@@ -90,187 +84,7 @@ For each demo task:
 
 ## Orchestration Plan Format
 
-```markdown
-# Orchestration Plan: [Project/Feature Name]
-
-## Overview
-
-**Objective:** [1-2 sentence goal from the brief]
-
-**Phases:** [number] phases, [number] total tasks, [number] demo checkpoints
-
-**Estimated Complexity:** Simple | Moderate | Complex
-
-**Key Skills Required:**
-- `skill-name` - [where it applies]
-- `skill-name` - [where it applies]
-
----
-
-## Phase 1: [Phase Name] ⏳
-
-**Status:** ⏳ Pending
-**Goal:** [What this phase accomplishes]
-
-**Dependencies:** None | [Previous phase]
-
-**Parallel Execution:** [Which tasks can run in parallel]
-
-### Task 1.1: [Task Name] ⏳
-
-**Status:** ⏳ Pending
-**Subagent:** worker | executor
-
-**Task Description:**
-[Clear description of what needs to be done - NO code implementations]
-
-**Context:**
-[Relevant context from the planning brief - requirements, decisions, constraints that apply to this task]
-
-**References:**
-- [Files to examine]
-- [Patterns to follow]
-- [Related components]
-
-**Success Criteria:**
-- [ ] [Specific, verifiable outcome]
-- [ ] [Another outcome]
-
-**Required Skills:**
-- `skill-name`
-
-**Constraints:**
-- [What NOT to do]
-- [Boundaries to respect]
-
-**Completion Notes:** _(filled by orchestrator after completion)_
-
----
-
-### Task 1.2: [Task Name] ⏳
-
-**Status:** ⏳ Pending
-[Same structure...]
-
----
-
-## Phase 2: [Phase Name] ⏳
-
-**Status:** ⏳ Pending
-**Goal:** [What this phase accomplishes]
-
-**Dependencies:** Phase 1
-
-[Tasks...]
-
----
-
-### Demo 2.1: [Feature Name] Verification 🧪
-
-**Status:** 🧪 Pending Demo
-**Subagent:** worker
-**Demo Type:** script | mini-project
-
-**What This Verifies:**
-[Specific functionality being tested - what new behavior is this confirming?]
-
-**Prerequisites:**
-- Task 2.1 complete
-- Task 2.2 complete
-
-**Demo Description:**
-[Clear description of what the demo should do and demonstrate]
-
-**Demo Location:** `demo/[feature-name]/`
-
-**Expected Behavior:**
-[What should happen when the demo runs successfully]
-
-**Verification Steps:**
-1. [Step-by-step instructions for user to verify]
-2. [What to look for]
-3. [How to confirm success]
-
-**Cleanup:**
-[What side effects need to be cleaned up - files created, state changed, etc.]
-
-**Completion Notes:** _(filled by orchestrator after demo verified)_
-
----
-
-## Execution Notes
-
-### Parallelization Opportunities
-- Tasks [X, Y, Z] in Phase N can run in parallel
-- [Explanation of why they're independent]
-
-### Critical Path
-[Which tasks are on the critical path and block other work]
-
-### Risk Points
-[Tasks that are higher risk or may need iteration]
-
-### Review Checkpoints
-[When the reviewer should be dispatched]
-- After Phase 1 completion
-- After each task in Phase 2 (complex phase)
-- Final review after Phase N
-
-### Demo Checkpoints
-[When demos should be created and verified]
-- Demo 2.1 after Task 2.1 and 2.2 reviewed
-- Demo 3.1 after Phase 3 reviewed
-- [Demos occur AFTER review passes, BEFORE next phase]
-
-### Documentation Checkpoints
-[When the documenter should be dispatched]
-- After Phase 1 review passes
-- After Phase 2 demo verified
-- After final phase demo verified
-
----
-
-## Demo Summary Table
-
-| Demo | Phase | Verifies | Type | Prerequisites | Status |
-|------|-------|----------|------|---------------|--------|
-| 2.1 | 2 | Auth flow | script | 2.1, 2.2 | 🧪 |
-| 3.1 | 3 | API integration | mini-project | 3.1, 3.2, 3.3 | 🧪 |
-| ... | ... | ... | ... | ... | 🧪 |
-
----
-
-## Task Summary Table
-
-| Phase | Task | Subagent | Dependencies | Parallel? | Status |
-|-------|------|----------|--------------|-----------|--------|
-| 1 | 1.1 Setup project structure | worker | none | no | ⏳ |
-| 1 | 1.2 Create base types | worker | none | yes (with 1.1) | ⏳ |
-| 2 | 2.1 Implement auth service | executor | 1.1, 1.2 | no | ⏳ |
-| 2 | Demo 2.1 Auth verification | worker | 2.1 reviewed | no | 🧪 |
-| ... | ... | ... | ... | ... | ⏳ |
-
----
-
-## Execution Status
-
-_This section is updated by the orchestrator during execution._
-
-**Last Updated:** [not started]
-**Current Phase:** -
-**Current Task:** -
-
-### Progress
-- Phases complete: 0 of [N]
-- Tasks complete: 0 of [N]
-- Demos verified: 0 of [N]
-
-### Divergences from Plan
-_(none yet)_
-
-### Handoff History
-_(none)_
-```
+Follow the plan template defined in: @.agents/command/plan/orchestration-plan-with-demos-template.md
 
 ---
 
@@ -449,18 +263,18 @@ Every demo must have a README.md following this structure:
 
 ## How to Run
 
-```bash
+\`\`\`bash
 cd demo/<feature-name>
 make run
-```
+\`\`\`
 
 ## Expected Output
 
 [What the user should see when the demo runs successfully]
 
-```
+\`\`\`
 Example output here...
-```
+\`\`\`
 
 ## Verification Checklist
 
@@ -470,9 +284,9 @@ Example output here...
 
 ## How to Clean Up
 
-```bash
+\`\`\`bash
 make clean
-```
+\`\`\`
 
 This removes:
 - [List of artifacts/side effects that get cleaned up]
@@ -533,19 +347,19 @@ Map these skills to relevant tasks:
 
 ### Good Task Descriptions
 
-✓ Describe WHAT needs to be accomplished
-✓ Include relevant context from the brief
-✓ Reference existing patterns/files to follow
-✓ Specify clear success criteria
-✓ Note constraints and boundaries
+- Describe WHAT needs to be accomplished
+- Include relevant context from the brief
+- Reference existing patterns/files to follow
+- Specify clear success criteria
+- Note constraints and boundaries
 
 ### Bad Task Descriptions
 
-✗ Include code implementations
-✗ Specify exact HOW (let subagent decide)
-✗ Vague outcomes ("make it work")
-✗ Missing context
-✗ No success criteria
+- Include code implementations
+- Specify exact HOW (let subagent decide)
+- Vague outcomes ("make it work")
+- Missing context
+- No success criteria
 
 ### Example Good Task
 
@@ -596,7 +410,7 @@ From the planning brief:
 **Demo Type:** script
 
 **What This Verifies:**
-The JWT authentication flow - login with valid credentials returns tokens, 
+The JWT authentication flow - login with valid credentials returns tokens,
 invalid credentials are rejected, and tokens can be used to access protected endpoints.
 
 **Prerequisites:**
@@ -800,12 +614,6 @@ Create these files:
 - [ ] README contains clear verification instructions
 - [ ] Demo exercises the new functionality specifically
 ```
-
----
-
-## Additional User Instructions
-
-$ARGUMENTS
 
 ---
 

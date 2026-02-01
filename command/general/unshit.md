@@ -1,125 +1,110 @@
 ---
-name: unshit
-description: Review codebase for bloat, unused/redundant code, and verbose implementations
+description: Find bloat, dead code, and redundancy then produce a cleanup plan
 ---
 
+## Project Context
 
-## Phase 1: Discover Code Issues with Seeker Agents
+Project: !`basename "$(git rev-parse --show-toplevel 2>/dev/null)"`
+Root: !`git rev-parse --show-toplevel 2>/dev/null`
+Languages: !`find . -maxdepth 4 -type f \( -name '*.py' -o -name '*.ts' -o -name '*.tsx' -o -name '*.js' -o -name '*.jsx' -o -name '*.go' -o -name '*.rs' -o -name '*.sol' \) 2>/dev/null | sed 's/.*\.//' | sort | uniq -c | sort -rn | head -5`
+Dependency files: !`ls -1 package.json requirements.txt pyproject.toml Cargo.toml go.mod go.sum 2>/dev/null`
+Top-level structure: !`ls -1`
+Git status: !`git status --short | head -20`
+Lines of code estimate: !`find . -type f \( -name '*.py' -o -name '*.ts' -o -name '*.tsx' -o -name '*.js' -o -name '*.jsx' -o -name '*.go' -o -name '*.rs' -o -name '*.sol' \) -not -path '*/node_modules/*' -not -path '*/.git/*' -not -path '*/dist/*' -not -path '*/build/*' -not -path '*/__pycache__/*' -not -path '*/vendor/*' 2>/dev/null | wc -l` source files
 
-Use the `task` tool with `subagent_type: seeker` to dispatch multiple parallel code reviews. Create at least 4-6 seeker agents to cover different aspects:
+## Phase 0: Propose Scope and Get User Input
 
-### Seeker 1: Find Dead/Unused Code
-Launch seeker agent to find:
-- Functions, methods, or classes never called/used
-- Variables that are declared but never accessed
-- Imports that are not used
-- Dead code blocks (commented out code that's not documentation)
-- Unreachable code paths
+Based on the project context above, propose a review scope:
+- Which directories contain the core source code
+- Which directories to skip (generated, vendored, build output)
+- Estimated scale of the review
 
-Instructions for seeker:
-- Search for patterns like unused imports, variables assigned but never read
-- Look for functions with no references outside their definition
-- Check for exports that are never imported elsewhere
-- Identify commented code blocks (not docstrings/comments explaining code)
-- Return: File paths, line numbers/ranges, and brief description of each unused item found
+Present the proposed scope to the user, then use the question tool to gather preferences:
 
-### Seeker 2: Find Redundant Implementations
-Launch seeker agent to find:
-- Duplicate logic across multiple files/functions
-- Functions doing similar things that could be unified
-- Repeated patterns that could be abstracted
-- Copy-paste code blocks
-- Multiple implementations of the same utility/concept
+**Question 1 - Review focus:**
+- header: "Focus areas"
+- question: "Which areas should this review focus on?"
+- multiple: true
+- options:
+  - Dead code (Unused functions, imports, variables, unreachable paths)
+  - Redundancy (Duplicate logic, copy-paste code, unifiable patterns)
+  - Complexity (Verbose functions, deep nesting, overengineering)
+  - Dependency bloat (Heavy/unused deps, stdlib replacements)
+  - Config/test bloat (Stale config, duplicate test setup, dead tests)
 
-Instructions for seeker:
-- Look for similar function signatures and implementations
-- Identify utility functions duplicated across files
-- Find patterns where the same logic is written multiple times
-- Check for identical or near-identical code blocks
-- Return: Groups of redundant implementations with file paths and descriptions
+**Question 2 - Depth:**
+- header: "Depth"
+- question: "How thorough should the review be?"
+- options:
+  - Quick scan (Top-level issues only, fast)
+  - Standard (Recommended) (Balanced depth and speed)
+  - Deep audit (Exhaustive, may take longer)
 
-### Seeker 3: Find Verbose/Overcomplicated Code
-Launch seeker agent to find:
-- Overly complex functions that could be simplified
-- Nested conditionals/indents that are excessive (4+ levels)
-- Functions with too many parameters (5+)
-- Functions with too many lines (50+ lines is a threshold, 100+ is bloat)
-- Classes with too many responsibilities
-- Long chains of method calls or ternary operations
+If the user comments on the proposed scope or adjusts it, incorporate their feedback before proceeding.
 
-Instructions for seeker:
-- Identify functions exceeding reasonable complexity metrics
-- Look for deeply nested code blocks
-- Find complex boolean expressions
-- Check for premature abstraction that's overengineered
-- Return: Locations with descriptions of how/why they're too verbose
+## Phase 1: Dispatch Seeker Agents
 
-### Seeker 4: Find Import/Dependency Bloat
-Launch seeker agent to find:
-- Heavy dependencies used for trivial tasks
-- Multiple libraries doing the same thing
-- Large imports where lighter alternatives exist
-- Dependencies that could be replaced with standard library
-- Unused or barely-used heavy dependencies
+Use the `task` tool with `subagent_type: seeker` to dispatch parallel code reviews. Only dispatch seekers for the focus areas the user selected.
 
-Instructions for seeker:
-- Analyze package.json, requirements.txt, Cargo.toml, etc.
-- Check if heavy dependencies are justified by their usage
-- Look for cases where a 10-line utility could replace a dependency
-- Identify dependency conflicts or redundancies
-- Return: Dependency concerns with file paths and usage analysis
+**Global seeker directives** (include in every seeker prompt):
+- Respect `.gitignore` -- skip `node_modules`, `dist`, `build`, `__pycache__`, `.git`, `vendor`, and any other generated/vendored directories
+- Scope to the directories agreed on in Phase 0
+- Use the project context (languages, dependency files) to target searches
+- Return: file path with line numbers/ranges, brief description, and estimated lines affected
 
-### Seeker 5: Find Configuration/Test Bloat
-Launch seeker agent to find:
-- Configuration files with unused settings
-- Test files with excessive boilerplate
-- Overly complex build configurations
-- Duplicate test setups
-- Dead configuration or stale tests
+### Seeker: Dead/Unused Code
+Find functions, methods, or classes never called. Find variables declared but never accessed, unused imports, commented-out code blocks (not explanatory comments), unreachable code paths, and exports never imported elsewhere.
 
-Instructions for seeker:
-- Check config files for unused options
-- Look for test patterns that are duplicated unnecessarily
-- Identify tests that don't actually test anything meaningful
-- Find configuration that could be simplified
-- Return: Config/test bloat locations with descriptions
+### Seeker: Redundant Implementations
+Find duplicate logic across files/functions, near-identical code blocks, utility functions duplicated across modules, repeated patterns that could be abstracted, and multiple implementations of the same concept.
+
+### Seeker: Verbose/Overcomplicated Code
+Find functions with deep nesting (4+ levels), excessive parameters (5+), or excessive length (50+ lines). Find classes with too many responsibilities, complex boolean expressions, premature/overengineered abstractions, and long method chains.
+
+### Seeker: Import/Dependency Bloat
+Analyze the project's dependency files. Find heavy dependencies used for trivial tasks, multiple libraries doing the same thing, dependencies replaceable with stdlib, and unused or barely-used heavy packages. Quantify how many call sites use each flagged dependency.
+
+### Seeker: Configuration/Test Bloat
+Find configuration files with unused settings, test files with excessive boilerplate or duplicate setup, overly complex build configs, and tests that don't assert anything meaningful.
 
 ## Phase 2: Compile Findings
 
-After all seeker agents return their results:
+After all seeker agents return:
 
-1. Consolidate all findings into a single report
-2. Group issues by category:
-   - Dead/Unused Code
-   - Redundancy
-   - Verbosity/Complexity
-   - Dependency Bloat
-   - Config/Test Bloat
-
-3. For each issue, document:
+1. Consolidate findings into a single report grouped by category
+2. For each issue, document:
    - Exact file path and line numbers
-   - Brief description of the bloat issue
-   - Severity (High/Medium/Low) based on impact
-   - Estimated effort to fix (Quick/Medium/Complex)
+   - Brief description
+   - **Impact score** (1-10): Weight by lines of code affected, how central the code is (imported by many vs leaf), and whether it's in a hot path
+   - **Frequency**: How many times the pattern repeats across the codebase
+   - **Fix effort** estimate: lines to change, files touched, risk of regression
+3. Sort issues by impact score descending within each category
+4. Produce a summary table: total issues found, total estimated lines of dead/redundant code, breakdown by category
 
 ## Phase 3: Create Improvement Plan
 
-Craft a detailed plan to address the findings:
+Craft a cleanup plan based on the compiled findings:
 
-1. Prioritize issues by severity and effort
-2. Group related fixes into batches
-3. For each batch, outline:
-   - What files need changes
-   - What the general approach should be (without writing the actual code yet)
-   - Any risks or considerations
-   - Expected outcome/improvement
+1. Rank all issues by `impact / effort` ratio (highest value fixes first)
+2. Group related fixes into batches (e.g., "remove all unused imports" is one batch)
+3. For each batch:
+   - Files affected
+   - Approach (without writing code)
+   - Risk assessment and what to test after
+   - Expected lines removed or simplified
+4. Organize batches into phases: quick wins first, then medium effort, then deep refactors
 
-4. Create a plan document that:
-   - Starts with a summary of total bloat found
-   - Lists issues in priority order
-   - Groups fixes into logical phases
-   - Provides clear next steps for implementation
+## Phase 4: Save Report
 
-Do NOT implement the fixes yet - only identify the bloat and create the plan.
+Determine the project name from the project context above.
 
-Output a comprehensive report showing what you found and the proposed plan to fix it.
+Save the full report (findings + plan) to:
+`~/thoughts/projects/{project}/reviews/YYYY-MM-DD_unshit.md`
+
+Use today's date. The report should include:
+- YAML frontmatter with `project`, `date`, `scope`, and `summary`
+- Full findings by category with the impact/effort data
+- The prioritized improvement plan
+- A "quick wins" section listing items fixable in under 5 minutes each
+
+Present a summary to the user with the report file path and the top 5 highest-impact findings.

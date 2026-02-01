@@ -419,7 +419,7 @@ You are an expert code reviewer...
 ```
 
 **Note:**
-- The filename becomes the agent name (no `name` field needed)
+- The filename becomes the agent name.
 - Description is plain text only (no XML tags)
 - The system prompt is the markdown body
 

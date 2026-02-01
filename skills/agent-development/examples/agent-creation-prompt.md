@@ -52,7 +52,7 @@ permission:
 [systemPrompt from JSON]
 ```
 
-**Note:** The filename becomes the agent name. Do NOT include a `name` field in frontmatter.
+**Note:** The filename becomes the agent name. 
 
 ## Example 1: Code Review Agent
 
@@ -223,11 +223,6 @@ description: |
 description: Use when the user asks to review code. Triggers on "review my code", "check my changes", or "look over this".
 ```
 
-### Filename Becomes Agent Name
-
-The filename (without `.md`) is the agent name. Do NOT include a `name` field in frontmatter.
-
-**File:** `.opencode/agents/code-reviewer.md` → Agent name: `code-reviewer`
 
 ### Subagents Must Set Model Explicitly
 

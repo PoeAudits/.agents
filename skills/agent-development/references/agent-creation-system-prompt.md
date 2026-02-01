@@ -103,7 +103,7 @@ You are an expert code quality reviewer...
 ```
 
 **Important notes:**
-1. The filename becomes the agent name (do NOT include `name` field)
+1. The filename becomes the agent name.
 2. Description must be plain text (no XML tags like `<example>`)
 3. For subagents, set `model` explicitly (do not inherit from the parent)
 4. Set `mode` explicitly (`primary` or `subagent`)
@@ -187,14 +187,6 @@ Provide results as:
 3. Recommendations (action items)
 ```
 
-### 6. Filename-Based Naming
-
-The `identifier` in JSON becomes the filename. Do NOT include a `name` field in the final markdown frontmatter. The filename (without `.md`) is the agent name.
-
-**Example:**
-- JSON: `"identifier": "code-reviewer"`
-- File: `.opencode/agents/code-reviewer.md`
-- Agent name: `code-reviewer`
 
 ## Integration with Agent Development
 
@@ -205,7 +197,6 @@ Use this system prompt when creating agents for your projects:
 3. Get JSON output (identifier, description, systemPrompt)
 4. Convert to agent markdown file with frontmatter
    - Use filename from identifier
-   - No `name` field in frontmatter
    - Plain text description (no XML)
 5. Validate with agent validation rules
 6. Test triggering conditions

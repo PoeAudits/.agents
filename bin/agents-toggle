@@ -1,0 +1,344 @@
+#!/usr/bin/env python3
+"""Toggle model profiles for Opencode agents/commands.
+
+Edits only YAML frontmatter `model:` keys in markdown files under:
+  - ~/.agents/agent/**/*.md
+  - ~/.agents/command/**/*.md
+
+Files without a frontmatter `model:` are left untouched.
+Unknown `model:` values are skipped and reported.
+"""
+
+from __future__ import annotations
+
+import argparse
+import os
+import sys
+from dataclasses import dataclass
+from pathlib import Path
+from typing import Iterable, Optional, Tuple
+
+
+@dataclass(frozen=True)
+class Profile:
+    name: str
+    simple: str
+    medium: str
+    complex: str
+
+    def model_for_level(self, level: str) -> str:
+        if level == "simple":
+            return self.simple
+        if level == "medium":
+            return self.medium
+        if level == "complex":
+            return self.complex
+        raise ValueError(f"unknown level: {level}")
+
+
+PROFILES: Tuple[Profile, ...] = (
+    Profile(
+        name="anthropic",
+        simple="anthropic/claude-haiku-4-5",
+        medium="anthropic/claude-sonnet-4-5",
+        complex="anthropic/claude-opus-4-5",
+    ),
+    Profile(
+        name="firmware",
+        simple="firmware/claude-haiku-4-5",
+        medium="firmware/claude-sonnet-4-5",
+        complex="firmware/claude-opus-4-5",
+    ),
+    Profile(
+        name="mix-free",
+        simple="firmware/claude-haiku-4-5",
+        medium="opencode/glm-4.7-free",
+        complex="opencode/kimi-k2.5-free",
+    ),
+)
+
+PROFILE_BY_NAME = {p.name: p for p in PROFILES}
+TOGGLE_ORDER = [p.name for p in PROFILES]
+
+
+def _strip_quotes(s: str) -> Tuple[str, str]:
+    """Return (value_without_quotes, quote_char_or_empty)."""
+    s2 = s.strip()
+    if len(s2) >= 2 and s2[0] == s2[-1] and s2[0] in ("\"", "'"):
+        return s2[1:-1], s2[0]
+    return s2, ""
+
+
+def _find_frontmatter(lines: list[str]) -> Optional[Tuple[int, int]]:
+    """Return (start_idx, end_idx) of YAML frontmatter (exclusive end)."""
+    if not lines:
+        return None
+    if lines[0].strip() != "---":
+        return None
+    for i in range(1, len(lines)):
+        if lines[i].strip() == "---":
+            return (0, i)
+    return None
+
+
+def _detect_level(model_value: str) -> Optional[str]:
+    simple = {
+        "anthropic/claude-haiku-4-5",
+        "firmware/claude-haiku-4-5",
+    }
+    medium = {
+        "anthropic/claude-sonnet-4-5",
+        "firmware/claude-sonnet-4-5",
+        "opencode/glm-4.7-free",
+    }
+    complex_ = {
+        "anthropic/claude-opus-4-5",
+        "firmware/claude-opus-4-5",
+        "opencode/kimi-k2.5-free",
+    }
+
+    if model_value in simple:
+        return "simple"
+    if model_value in medium:
+        return "medium"
+    if model_value in complex_:
+        return "complex"
+    return None
+
+
+def _update_file_model(path: Path, profile: Profile) -> Tuple[bool, list[str]]:
+    """Return (changed, warnings)."""
+    warnings: list[str] = []
+
+    try:
+        text = path.read_text(encoding="utf-8")
+    except Exception as e:
+        return False, [f"WARN {path}: failed to read ({e})"]
+
+    # Preserve original newline style as best as possible.
+    newline = "\r\n" if "\r\n" in text and "\n" in text else "\n"
+    lines = text.splitlines(keepends=False)
+    fm = _find_frontmatter(lines)
+    if fm is None:
+        return False, warnings
+
+    start, end = fm
+    model_line_idxs: list[int] = []
+    for i in range(start + 1, end):
+        raw = lines[i]
+        stripped = raw.lstrip()
+        if stripped.startswith("model:"):
+            model_line_idxs.append(i)
+
+    if not model_line_idxs:
+        return False, warnings
+    if len(model_line_idxs) > 1:
+        warnings.append(f"WARN {path}: multiple model keys in frontmatter; updating first")
+
+    i = model_line_idxs[0]
+    raw = lines[i]
+    prefix, _, rest = raw.partition(":")
+    # Preserve indentation and spacing after ':'
+    after_colon = rest
+    # common: 'model: value' so keep exactly one space if present
+    if after_colon.startswith(" "):
+        ws = " "
+        val_part = after_colon[1:]
+    else:
+        ws = ""
+        val_part = after_colon
+
+    current_val, quote = _strip_quotes(val_part)
+    level = _detect_level(current_val)
+    if level is None:
+        warnings.append(f"WARN {path}: unknown model '{current_val}' (skipped)")
+        return False, warnings
+
+    new_val = profile.model_for_level(level)
+    if new_val == current_val:
+        return False, warnings
+
+    rendered = f"{prefix}:{ws}{quote}{new_val}{quote}".rstrip()
+    lines[i] = rendered
+    new_text = newline.join(lines) + newline
+
+    try:
+        path.write_text(new_text, encoding="utf-8")
+    except Exception as e:
+        return False, [f"WARN {path}: failed to write ({e})"]
+
+    return True, warnings
+
+
+def _iter_target_files(agents_dir: Path) -> Iterable[Path]:
+    for sub in ("agent", "command"):
+        base = agents_dir / sub
+        if not base.exists():
+            continue
+        yield from base.rglob("*.md")
+
+
+def _state_path(agents_dir: Path) -> Path:
+    return agents_dir / ".agents-model-profile"
+
+
+def _read_active_profile_name(agents_dir: Path) -> Optional[str]:
+    p = _state_path(agents_dir)
+    if not p.exists():
+        return None
+    try:
+        name = p.read_text(encoding="utf-8").strip()
+    except Exception:
+        return None
+    return name or None
+
+
+def _write_active_profile_name(agents_dir: Path, name: str) -> None:
+    _state_path(agents_dir).write_text(name + "\n", encoding="utf-8")
+
+
+def _infer_active_profile_name(agents_dir: Path) -> str:
+    # Score profiles by exact matches across all known model values.
+    scores = {p.name: 0 for p in PROFILES}
+    any_known = False
+
+    for path in _iter_target_files(agents_dir):
+        try:
+            lines = path.read_text(encoding="utf-8").splitlines()
+        except Exception:
+            continue
+        fm = _find_frontmatter(lines)
+        if fm is None:
+            continue
+        start, end = fm
+        for i in range(start + 1, end):
+            stripped = lines[i].lstrip()
+            if not stripped.startswith("model:"):
+                continue
+            _, _, rest = lines[i].partition(":")
+            val, _q = _strip_quotes(rest)
+            val = val.strip()
+            if _detect_level(val) is None:
+                continue
+            any_known = True
+            for p in PROFILES:
+                if val in (p.simple, p.medium, p.complex):
+                    scores[p.name] += 1
+
+    if not any_known:
+        return "anthropic"
+
+    # Tie-breaker uses TOGGLE_ORDER ordering.
+    best = TOGGLE_ORDER[0]
+    for name in TOGGLE_ORDER:
+        if scores[name] > scores[best]:
+            best = name
+    return best
+
+
+def _next_profile_name(current: str) -> str:
+    if current not in TOGGLE_ORDER:
+        return TOGGLE_ORDER[0]
+    idx = TOGGLE_ORDER.index(current)
+    return TOGGLE_ORDER[(idx + 1) % len(TOGGLE_ORDER)]
+
+
+def main(argv: list[str]) -> int:
+    parser = argparse.ArgumentParser(prog="agents-toggle")
+    parser.add_argument(
+        "profile",
+        nargs="?",
+        help=f"Profile name to set ({', '.join(TOGGLE_ORDER)}); omit to toggle",
+    )
+    parser.add_argument("--list", action="store_true", help="List available profiles")
+    parser.add_argument("--status", action="store_true", help="Show current profile and change counts")
+    parser.add_argument("--dry-run", action="store_true", help="Show what would change without writing")
+    args = parser.parse_args(argv)
+
+    agents_dir = Path(os.environ.get("AGENTS_DIR", str(Path.home() / ".agents"))).expanduser()
+    if not agents_dir.exists():
+        print(f"ERROR: AGENTS_DIR not found: {agents_dir}", file=sys.stderr)
+        return 2
+
+    if args.list:
+        for p in PROFILES:
+            print(
+                f"{p.name}\n"
+                f"  simple:  {p.simple}\n"
+                f"  medium:  {p.medium}\n"
+                f"  complex: {p.complex}\n"
+            )
+        return 0
+
+    current = _read_active_profile_name(agents_dir) or _infer_active_profile_name(agents_dir)
+
+    if args.profile:
+        if args.profile not in PROFILE_BY_NAME:
+            print(f"ERROR: unknown profile '{args.profile}'. Use --list.", file=sys.stderr)
+            return 2
+        target_name = args.profile
+    else:
+        target_name = _next_profile_name(current)
+
+    target = PROFILE_BY_NAME[target_name]
+
+    changed_files: list[Path] = []
+    warnings: list[str] = []
+    would_change = 0
+
+    for path in _iter_target_files(agents_dir):
+        # For status/dry-run, we still compute changes, but only write if not dry-run.
+        if args.dry_run or args.status:
+            before = path.read_text(encoding="utf-8")
+            tmp = Path(str(path) + ".__agents_toggle_tmp__")
+            try:
+                tmp.write_text(before, encoding="utf-8")
+                ch, warns = _update_file_model(tmp, target)
+                warnings.extend(warns)
+                if ch:
+                    would_change += 1
+                    if args.dry_run:
+                        # keep output concise: path only
+                        print(f"WOULD_UPDATE {path}")
+            finally:
+                try:
+                    tmp.unlink(missing_ok=True)  # py3.8+: missing_ok
+                except TypeError:
+                    if tmp.exists():
+                        tmp.unlink()
+            continue
+
+        ch, warns = _update_file_model(path, target)
+        warnings.extend(warns)
+        if ch:
+            changed_files.append(path)
+
+    if args.status:
+        print(f"current={current}")
+        print(f"target={target_name}")
+        print(f"would_change_files={would_change}")
+        if warnings:
+            print(f"warnings={len(warnings)}")
+        return 0
+
+    if args.dry_run:
+        print(f"current={current}")
+        print(f"target={target_name}")
+        print(f"would_change_files={would_change}")
+        if warnings:
+            for w in warnings:
+                print(w, file=sys.stderr)
+        return 0
+
+    _write_active_profile_name(agents_dir, target_name)
+    print(f"current={current}")
+    print(f"active={target_name}")
+    print(f"updated_files={len(changed_files)}")
+    if warnings:
+        for w in warnings:
+            print(w, file=sys.stderr)
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main(sys.argv[1:]))

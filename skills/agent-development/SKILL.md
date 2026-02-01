@@ -1,7 +1,6 @@
 ---
-name: Agent Development
+name: agent-development
 description: This skill should be used when the user asks to "create an agent", "add an agent", "write a subagent", "agent frontmatter", "when to use description", "agent examples", or needs guidance on agent structure, system prompts, triggering conditions, permissions, and best practices for Opencode.
-version: 0.2.0
 ---
 
 # Agent Development for Opencode
@@ -11,8 +10,7 @@ version: 0.2.0
 Agents are Markdown files with YAML frontmatter plus a system prompt body.
 
 **Key rules (most important):**
-- The **filename** becomes the agent name (e.g., `code-reviewer.md` → `@code-reviewer`). Do not add a `name:` field.
-- `description` is **plain text** and drives **triggering**.
+- The **filename** becomes the agent name (e.g., `code-reviewer.md` → `@code-reviewer`). `description` is **plain text** and drives **triggering**.
 - `mode` must be **explicit**: `primary` or `subagent` (do not use `all`).
 - **Subagents must set `model` explicitly** (never inherit from the parent).
 - **Primary agents should omit `model`**.
