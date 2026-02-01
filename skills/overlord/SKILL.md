@@ -1,11 +1,11 @@
 ---
-name: overlord-v2
+name: overlord
 description: "System-wide project organization and file structure. Use when needing to understand where projects live, how directories are organized, where to find planning artifacts, how to discover existing projects, or where to place new work."
 ---
 
 # Overlord — System Organization
 
-Overlord is a project registry that keeps all projects, planning artifacts, and metadata organized. The registry at `~/.config/overlord/registry.yaml` is the source of truth — don't edit it directly, unless explicitly instructed to.
+Overlord is a project registry that keeps all projects, planning artifacts, and metadata organized. The registry at `~/.config/overlord/registry.yaml` is the source of truth — do not edit directly unless explicitly instructed.
 
 ## Directory Layout
 

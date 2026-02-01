@@ -8,7 +8,7 @@ version: 0.3.0
 
 ## Overview
 
-Slash commands are frequently-used prompts defined as Markdown files that the agent executes during interactive sessions. Understanding command structure, frontmatter options, and dynamic features enables creating powerful, reusable workflows.
+Slash commands are frequently-used prompts defined as Markdown files that the agent executes during interactive sessions. Command structure, frontmatter options, and dynamic features enable creating powerful, reusable workflows.
 
 **Key concepts:**
 - Markdown file format for commands
@@ -147,7 +147,7 @@ agent: code-reviewer
 ---
 ```
 
-**Use when:** Command should be handled by a specialized agent with its own system prompt and configuration.
+**Use when:** Command is handled by a specialized agent with its own system prompt and configuration.
 
 
 
@@ -277,10 +277,10 @@ Ensure:
 
 Commands can execute bash commands inline to dynamically gather context before the agent processes the command. This is useful for including repository state, environment information, or project-specific context.
 
-**When to use:**
-- Include dynamic context (git status, environment vars, etc.)
-- Gather project/repository state
-- Build context-aware workflows
+**Use when:**
+- Including dynamic context (git status, environment vars, etc.)
+- Gathering project/repository state
+- Building context-aware workflows
 
 **Syntax:** Use `!` followed by a backtick-wrapped command:
 
@@ -306,7 +306,7 @@ Simple organization for small command sets:
 └── docs.md
 ```
 
-**Use when:** 5-15 commands, no clear categories
+**Use when:** 5-15 commands with no clear categories
 
 ### Namespaced Structure
 
@@ -331,7 +331,7 @@ Organize commands in subdirectories:
 - Namespace shown in `/help`
 - Easier to find related commands
 
-**Use when:** 15+ commands, clear categories
+**Use when:** 15+ commands with clear categories
 
 ## Best Practices
 
@@ -584,5 +584,14 @@ If build failed:
 
 ---
 
-For detailed frontmatter field specifications, see `references/frontmatter-reference.md`.
-For command pattern examples, see `examples/` directory.
+## Additional Resources
+
+### Reference Files
+- **`references/frontmatter-reference.md`** - Complete frontmatter field reference
+- **`references/interactive-commands.md`** - Patterns for interactive command workflows
+- **`references/testing-strategies.md`** - Strategies for testing commands
+- **`references/documentation-patterns.md`** - Documentation patterns for commands
+- **`references/advanced-workflows.md`** - Advanced command workflow patterns
+
+### Examples
+- **`examples/`** - Command pattern examples

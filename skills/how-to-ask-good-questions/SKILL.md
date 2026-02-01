@@ -24,7 +24,7 @@ Do not ask questions when:
 - The request is already clear and actionable
 - A quick, low-risk discovery read can answer the question (check configs, existing patterns, docs first)
 - The action is low-risk and easily reversible
-- You've already asked about this topic and received an answer
+- The topic has already been asked about and answered
 
 **Key principle:** Before asking, check if the answer is discoverable from context. Read relevant files, configs, or documentation first.
 
@@ -165,7 +165,7 @@ Structure questions so users can respond quickly with minimal cognitive load:
 Use these patterns as starting points:
 
 - **Scope clarification:**
-  "Before I start, I need to understand: (1) ..., (2) ..., (3) .... If you're unsure about (2), I'll assume ...."
+  "Before starting, need to understand: (1) ..., (2) ..., (3) .... If unsure about (2), will assume ...."
 
 - **Binary choice:**
   "Should this: A) ... or B) ...? (pick one)"
@@ -174,7 +174,7 @@ Use these patterns as starting points:
   "What would you consider 'done'? For example: ..."
 
 - **Constraints:**
-  "Any constraints I must follow (versions, performance, style, deps)? If none, I'll target existing project defaults."
+  "Any constraints to follow (versions, performance, style, deps)? If none, will target existing project defaults."
 
 - **Compact multi-choice:**
   ```
@@ -188,7 +188,7 @@ Use these patterns as starting points:
 
 ## Review Before Sending
 
-After drafting your questions, review them before presenting to the user:
+After drafting questions, review them before presenting to the user:
 
 ### Check for Overlap
 
@@ -206,11 +206,11 @@ Remove questions where:
 
 ### Check for Gaps
 
-Ensure you've covered the essential dimensions:
-- [ ] Scope (in/out) is clear
-- [ ] Success criteria are defined
-- [ ] Key constraints are identified
-- [ ] No obvious ambiguities remain
+Ensure the essential dimensions are covered:
+- Scope (in/out) is clear
+- Success criteria are defined
+- Key constraints are identified
+- No obvious ambiguities remain
 
 ### Merge Similar Questions
 
@@ -256,7 +256,7 @@ A **direct contradiction** occurs when two statements are logically incompatible
 4. **Ask for explicit resolution**
 
 Example:
-> I need to pause - I've detected a contradiction:
+> Need to pause - detected a contradiction:
 >
 > Earlier: "The system should process requests in real-time"
 > Just now: "Batch processing overnight is fine"
@@ -281,13 +281,13 @@ A **tension** exists when requirements are difficult to satisfy together but not
 
 **When detected:**
 
-1. **Present tensions before your next questions**
+1. **Present tensions before next questions**
 2. **Explain why they might conflict**
 3. **Ask for clarification on tensions first**
 4. **Then proceed with other questions**
 
 Example:
-> Before my next questions, I want to flag potential tensions:
+> Before next questions, flagging potential tensions:
 >
 > **Tension 1:** "Sub-100ms response times" + "query external API on every request" - external API latency may make this difficult. Options: caching, background refresh, or relaxed latency target.
 >
@@ -318,9 +318,9 @@ Example:
 
 ### When User Says "Just Proceed"
 
-If the user explicitly asks you to proceed without answering questions:
+If the user explicitly asks to proceed without answering questions:
 
-1. **State your assumptions as a numbered list:**
+1. **State assumptions as a numbered list:**
    > Proceeding with these assumptions:
    > 1. Scope: minimal change, only touching X component
    > 2. Compatibility: must work with existing API
@@ -335,7 +335,7 @@ If the user explicitly asks you to proceed without answering questions:
 
 ## Confirmation Before Acting
 
-Once you have answers, confirm your understanding before starting work:
+Once answers are received, confirm understanding before starting work:
 
 1. **Restate requirements in 1-3 sentences**
 2. **Include key constraints and success criteria**
@@ -345,9 +345,9 @@ Once you have answers, confirm your understanding before starting work:
 
 **After receiving answers like:** `1a 2b 3a 4b`
 
-> **Confirming before I start:**
+> **Confirming before starting:**
 > 
-> I'll add JWT-based authentication to the existing Express app. Scope is login/logout only (no registration flow for now). Must maintain backward compatibility with the current session endpoints during migration. Success = users can authenticate via the new `/auth/login` endpoint and access protected routes.
+> Will add JWT-based authentication to the existing Express app. Scope is login/logout only (no registration flow for now). Must maintain backward compatibility with the current session endpoints during migration. Success = users can authenticate via the new `/auth/login` endpoint and access protected routes.
 >
 > Starting implementation now.
 
@@ -357,7 +357,7 @@ Once you have answers, confirm your understanding before starting work:
 
 > **Confirming approach:**
 >
-> I'll optimize the dashboard API with a 500ms target (relaxed from 100ms). Caching external API responses for 5 minutes is acceptable. Will add a loading state for the initial fetch. The "real-time" requirement applies only to the notification badge, not the full dashboard.
+> Will optimize the dashboard API with a 500ms target (relaxed from 100ms). Caching external API responses for 5 minutes is acceptable. Will add a loading state for the initial fetch. The "real-time" requirement applies only to the notification badge, not the full dashboard.
 >
 > Proceeding with this approach.
 
@@ -367,7 +367,7 @@ Once you have answers, confirm your understanding before starting work:
 
 | Anti-Pattern | Better Approach |
 |--------------|-----------------|
-| Asking questions you could answer by reading code/configs | Check context first, then ask only what you can't discover |
+| Asking questions that could be answered by reading code/configs | Check context first, then ask only what can't be discovered |
 | Open-ended questions ("What else should I know?") | Specific multiple-choice or yes/no questions |
 | Too many questions at once (15+) | 3-10 high-leverage questions per round |
 | Vague questions ("Any preferences?") | Concrete options ("Should this use REST or GraphQL?") |
@@ -379,23 +379,23 @@ Once you have answers, confirm your understanding before starting work:
 
 ---
 
-## Checklist: Before Asking
+## Before Asking
 
 ### Content Check
-- [ ] Did I check if the answer is in the codebase (configs, patterns, docs)?
-- [ ] Is each question high-leverage (eliminates significant ambiguity)?
-- [ ] Am I asking the minimum number of questions needed?
-- [ ] Have I covered scope, success criteria, and key constraints?
+- Has the codebase been checked for the answer (configs, patterns, docs)?
+- Is each question high-leverage (eliminates significant ambiguity)?
+- Is this the minimum number of questions needed?
+- Are scope, success criteria, and key constraints covered?
 
 ### Format Check
-- [ ] Are questions formatted for quick response (numbered, multiple-choice)?
-- [ ] Did I provide a fast-path option (`defaults`)?
-- [ ] Did I mark recommended choices clearly?
-- [ ] Did I include "not sure" escape hatches?
+- Are questions formatted for quick response (numbered, multiple-choice)?
+- Is a fast-path option (`defaults`) provided?
+- Are recommended choices marked clearly?
+- Are "not sure" escape hatches included?
 
 ### Quality Check
-- [ ] Are questions ordered logically (scope → goals → constraints → details)?
-- [ ] Have I combined related questions where appropriate?
-- [ ] Have I noted any cascading dependencies between questions?
-- [ ] Is there any overlap between questions that should be merged?
-- [ ] Am I blocking on must-know questions, not nice-to-know?
+- Are questions ordered logically (scope → goals → constraints → details)?
+- Are related questions combined where appropriate?
+- Are cascading dependencies between questions noted?
+- Is there overlap between questions that should be merged?
+- Is blocking on must-know questions, not nice-to-know?

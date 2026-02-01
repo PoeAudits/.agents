@@ -1,11 +1,32 @@
 ---
 name: database
-description: Database design and optimization skills for SQL and PostgreSQL.
+description: Database design and optimization skills for SQL and PostgreSQL. This skill should be used when "designing database schemas", "optimizing SQL queries", or "implementing PostgreSQL features".
 ---
 
 # Database Skills
 
-| Skill | Description |
-|-------|-------------|
-| postgresql-table-design | Design a PostgreSQL-specific schema. Covers best-practices, data types, indexing, constraints, performance patterns, and advanced features |
-| sql-optimization-patterns | Master SQL query optimization, indexing strategies, and EXPLAIN analysis to dramatically improve database performance and eliminate slow queries. Use when debugging slow queries, designing database schemas, or optimizing application performance. |
+A collection of skills for designing performant database schemas and optimizing SQL queries. Each skill focuses on a specific aspect of database development.
+
+## Activation Triggers
+
+- Designing PostgreSQL database schemas
+- Choosing appropriate data types and constraints
+- Debugging slow-running queries
+- Optimizing application database performance
+- Implementing efficient indexes
+- Analyzing EXPLAIN query plans
+- Resolving N+1 query problems
+- Reducing database load and costs
+
+## Quick Routing
+
+**Need to design a PostgreSQL schema or choose data types?** → `postgresql-table-design`
+
+**Need to debug slow queries or optimize performance?** → `sql-optimization-patterns`
+
+## Skill Map
+
+| Skill | Covers |
+|-------|--------|
+| [postgresql-table-design](references/postgresql-table-design/SKILL.md) | PostgreSQL-specific schema design including data types, indexing, constraints, and performance patterns |
+| [sql-optimization-patterns](references/sql-optimization-patterns/SKILL.md) | SQL query optimization, indexing strategies, and EXPLAIN analysis for improved performance |

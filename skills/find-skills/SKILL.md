@@ -5,7 +5,7 @@ description: Helps users discover and install agent skills when they ask questio
 
 # Find Skills
 
-This skill helps you discover and install skills from the open agent skills ecosystem.
+This skill helps discover and install skills from the open agent skills ecosystem.
 
 ## When to Use This Skill
 
@@ -66,7 +66,7 @@ vercel-labs/agent-skills@vercel-react-best-practices
 
 ### Step 3: Present Options to the User
 
-When you find relevant skills, present them to the user with:
+Present relevant skills to the user with:
 
 1. The skill name and what it does
 2. The install command they can run
@@ -86,7 +86,7 @@ Learn more: https://skills.sh/vercel-labs/agent-skills/vercel-react-best-practic
 
 ### Step 4: Offer to Install
 
-If the user wants to proceed, you can install the skill for them:
+If the user wants to proceed, install the skill for them:
 
 ```bash
 npx skills add <owner/repo@skill> -g -y

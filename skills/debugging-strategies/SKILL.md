@@ -46,7 +46,7 @@ Transform debugging from frustrating guesswork into systematic problem-solving w
 
 ### 3. Rubber Duck Debugging
 
-Explain your code and problem out loud (to a rubber duck, colleague, or yourself). Often reveals the issue.
+Explain the code and problem out loud (to a rubber duck, colleague, or another person). Often reveals the issue.
 
 ## Systematic Debugging Process
 
@@ -55,7 +55,7 @@ Explain your code and problem out loud (to a rubber duck, colleague, or yourself
 ```markdown
 ## Reproduction Checklist
 
-1. **Can you reproduce it?**
+1. **Can it be reproduced?**
    - Always? Sometimes? Randomly?
    - Specific conditions needed?
    - Can others reproduce it?
@@ -488,13 +488,13 @@ afterEach(() => {
 
 ## Best Practices
 
-1. **Reproduce First**: Can't fix what you can't reproduce
+1. **Reproduce First**: Can't fix what can't be reproduced
 2. **Isolate the Problem**: Remove complexity until minimal case
 3. **Read Error Messages**: They're usually helpful
 4. **Check Recent Changes**: Most bugs are recent
 5. **Use Version Control**: Git bisect, blame, history
 6. **Take Breaks**: Fresh eyes see better
-7. **Document Findings**: Help future you
+7. **Document Findings**: Help future debugging
 8. **Fix Root Cause**: Not just symptoms
 
 ## Common Debugging Mistakes
@@ -526,11 +526,4 @@ afterEach(() => {
 - [ ] Stale data (refresh database)
 ```
 
-## Resources
 
-- **references/debugging-tools-guide.md**: Comprehensive tool documentation
-- **references/performance-profiling.md**: Performance debugging guide
-- **references/production-debugging.md**: Debugging live systems
-- **assets/debugging-checklist.md**: Quick reference checklist
-- **assets/common-bugs.md**: Common bug patterns
-- **scripts/debug-helper.ts**: Debugging utility functions

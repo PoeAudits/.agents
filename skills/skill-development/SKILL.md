@@ -529,6 +529,23 @@ skill-name/
 
 Good for: Complex domains with validation utilities
 
+### Parent Routing Skill
+
+```
+parent-skill/
+├── SKILL.md              (lightweight routing guide)
+└── references/
+    ├── sub-skill-one/
+    │   ├── SKILL.md
+    │   └── references/
+    ├── sub-skill-two/
+    │   └── SKILL.md
+    └── sub-skill-three/
+        └── SKILL.md
+```
+
+Good for: Domains with multiple related sub-skills that need routing guidance. Sub-skills live in `references/` as on-demand reference material. Consult **`references/parent-routing-skills.md`** for the full pattern, template, and examples.
+
 ## Best Practices Summary
 
 ✅ **DO:**
@@ -554,7 +571,7 @@ Good for: Complex domains with validation utilities
 
 ### Reference Files
 
-For complete skill-creator methodology:
+- **`references/parent-routing-skills.md`** - Pattern for multi-skill domains: directory structure, parent SKILL.md template, complete example, and validation checklist
 - **`references/skill-creator-original.md`** - Full original skill-creator content
 
 ## Implementation Workflow

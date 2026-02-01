@@ -109,7 +109,7 @@ permission:
 **Common tool keys:**
 - `read`, `write`, `edit`, `grep`, `glob`, `bash`, `task`, `skill`, `webfetch`, `websearch`, `codesearch`
 
-You can also scope bash permissions by command:
+Scope bash permissions by command:
 
 ```yaml
 permission:
@@ -129,7 +129,7 @@ temperature: 0.3
 
 **Guidelines:**
 - Prefer ~`0.2–0.6` for most agents
-- Avoid `0.0` and `1.0` unless you have a strong reason
+- Avoid `0.0` and `1.0` unless there is a strong reason
 - Practical range: `0.1–0.9`
 
 ## System Prompt Design

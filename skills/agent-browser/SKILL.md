@@ -98,7 +98,7 @@ agent-browser click @e1                   # Perform actions
 agent-browser record stop                 # Stop and save video
 agent-browser record restart ./take2.webm # Stop current + start new recording
 ```
-Recording creates a fresh context but preserves cookies/storage from your session. If no URL is provided, it automatically returns to your current page. For smooth demos, explore first, then start recording.
+Recording creates a fresh context but preserves cookies/storage from the session. If no URL is provided, it automatically returns to the current page. For smooth demos, explore first, then start recording.
 
 ### Wait
 ```bash

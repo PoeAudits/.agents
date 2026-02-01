@@ -1,33 +1,30 @@
 ---
 name: documentation
-description: Documentation skills for maintaining README.md and AGENTS.md files.
+description: Documentation skills for maintaining README.md and AGENTS.md files. This skill should be used when "writing README files", "creating AGENTS.md", "updating project documentation", or "documenting code for AI assistants".
 ---
 
 # Documentation Skills
 
-This directory contains skills for maintaining project documentation:
+A collection of skills for maintaining project documentation. Each skill focuses on a specific documentation audience and format.
 
-- **readme-documentation**: Guidelines for writing and updating README.md files for human readers
-- **agents-documentation**: Guidelines for writing and updating AGENTS.md files for AI agents
+## Activation Triggers
 
-## When to Use
-
-Use these skills when:
-- Creating new documentation for a project
+- Creating new project documentation
 - Updating documentation after implementation changes
-- Reviewing documentation for completeness
+- Writing README files for human users
+- Creating AGENTS.md files for AI coding assistants
+- Reviewing documentation for completeness and accuracy
 - The documenter subagent is processing phase completions
 
-## Two Audiences
+## Quick Routing
 
-| File | Audience | Purpose |
-|------|----------|---------|
-| README.md | Humans | How to use, install, contribute |
-| AGENTS.md | AI Agents | How to understand and navigate the codebase |
+**Writing for human users?** → `readme-documentation`
 
-## Key Principles
+**Writing for AI assistants?** → `agents-documentation`
 
-1. **Keep them separate**: Don't duplicate content between README and AGENTS.md
-2. **Keep them current**: Update after every significant change
-3. **Keep them scannable**: Use headers, lists, tables - not walls of text
-4. **Keep them accurate**: Wrong documentation is worse than no documentation
+## Skill Map
+
+| Skill | Covers |
+|-------|--------|
+| [readme-documentation](references/readme-documentation/SKILL.md) | Guidelines for writing and updating README.md files for human readers including structure, examples, and best practices |
+| [agents-documentation](references/agents-documentation/SKILL.md) | Guidelines for writing and updating AGENTS.md files for AI coding assistants including architecture patterns and conventions |
